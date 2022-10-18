@@ -6,7 +6,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "jscodeshift": "jscodeshift -t src/jscodeshift/transform.js src/App.enzyme.spec.js"
   },
   "eslintConfig": {
     "extends": [
@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.6"
+    "enzyme-adapter-react-16": "^1.15.6",
+    "jscodeshift": "^0.14.0"
   }
 }
