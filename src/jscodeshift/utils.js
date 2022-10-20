@@ -1,4 +1,4 @@
-export const findWrapperExpect = (j, ast, { wrapperIdentifier = 'wrapper' }) =>
+export const findWrapperFindExpect = (j, ast, { wrapperIdentifier = 'wrapper' }) =>
   ast.find(j.ExpressionStatement, {
     expression: {
       type: 'CallExpression',
@@ -16,6 +16,9 @@ export const findWrapperExpect = (j, ast, { wrapperIdentifier = 'wrapper' }) =>
                     object: {
                       type: 'Identifier',
                       name: wrapperIdentifier,
+                    },
+                    property: {
+                      name: 'find',
                     },
                   },
                 },

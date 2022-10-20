@@ -1,5 +1,5 @@
 import { insertImportSpecifier } from '@codeshift/utils';
-import { findWrapperExpect, isRtlFnExists, buildRtlImport } from './utils';
+import { findWrapperFindExpect, isRtlFnExists, buildRtlImport } from './utils';
 
 const transformMountImport = (j, ast) => {
   ast
@@ -45,10 +45,32 @@ const transformMountCall = (j, ast) => {
   };
 };
 
-const transformLinkTextExpect = (j, ast) => (path) => {
+const transformLinkTextExpect = (j, ast, { wrapperIdentifier }) => {
   if (!isRtlFnExists(j, ast, 'screen')) {
     insertImportSpecifier(j, ast, j.importSpecifier(j.identifier('screen')), '@testing-library/react');
   }
+
+  findWrapperFindExpect(j, ast, { wrapperIdentifier }).forEach((path) => {
+    const { expression } = path.value;
+    const expectFn = expression.callee.property.name;
+    const findCallee = expression.callee.object.arguments[0].callee;
+    const findChainFn = findCallee.property.name;
+
+    if (findChainFn === 'text' && ['toBe', 'toEqual'].includes(expectFn)) {
+      const expectedValue = expression.arguments[0].value;
+      const selector = findCallee.object.arguments[0].value;
+
+      if (selector === 'a' || selector.startsWith('a.')) {
+        j(path).replaceWith(`
+          expect(
+            screen.getByRole('link', {
+              name: ${expectedValue},
+            })
+          ).toBeInTheDocument();
+          `);
+      }
+    }
+  });
 };
 
 module.exports = (file, api) => {
@@ -58,7 +80,7 @@ module.exports = (file, api) => {
   transformMountImport(j, ast);
   const { wrapperIdentifier } = transformMountCall(j, ast);
 
-  findWrapperExpect(j, ast, { wrapperIdentifier }).forEach(transformLinkTextExpect(j, ast));
+  transformLinkTextExpect(j, ast, { wrapperIdentifier });
 
   return ast.toSource({
     quote: 'single',
