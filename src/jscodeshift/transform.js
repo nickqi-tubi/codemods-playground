@@ -1,5 +1,6 @@
 import { insertImportSpecifier } from '@codeshift/utils';
 import { findWrapperFindExpect, isRtlFnExists, buildRtlImport } from './utils';
+import prettier from 'prettier';
 
 const transformMountImport = (j, ast) => {
   ast
@@ -61,13 +62,11 @@ const transformLinkTextExpect = (j, ast, { wrapperIdentifier }) => {
       const selector = findCallee.object.arguments[0].value;
 
       if (selector === 'a' || selector.startsWith('a.')) {
-        j(path).replaceWith(`
-          expect(
-            screen.getByRole('link', {
-              name: ${expectedValue},
-            })
-          ).toBeInTheDocument();
-          `);
+        j(path).replaceWith(`expect(
+  screen.getByRole('link', {
+    name: "${expectedValue}",
+  })
+).toBeInTheDocument();`);
       }
     }
   });
@@ -79,10 +78,8 @@ module.exports = (file, api) => {
 
   transformMountImport(j, ast);
   const { wrapperIdentifier } = transformMountCall(j, ast);
-
   transformLinkTextExpect(j, ast, { wrapperIdentifier });
 
-  return ast.toSource({
-    quote: 'single',
-  });
+  const source = ast.toSource({ quote: 'single' });
+  return prettier.format(source, { parser: 'babel', singleQuote: true });
 };
