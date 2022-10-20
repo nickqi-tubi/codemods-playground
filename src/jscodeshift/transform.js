@@ -1,3 +1,4 @@
+import { getImportDeclaration } from '@codeshift/utils';
 import { findWrapperExpect, isRtlFnExists, buildRtlImport } from './utils';
 
 const transformMountImport = (j, ast) => {
@@ -23,7 +24,7 @@ const transformMountImport = (j, ast) => {
 };
 
 const transformMountCall = (j, ast) => {
-  const node = ast.find(j.VariableDeclaration, {
+  const collection = ast.find(j.VariableDeclaration, {
     declarations: [
       {
         init: {
@@ -34,10 +35,10 @@ const transformMountCall = (j, ast) => {
       },
     ],
   });
-  const args = node.find(j.CallExpression).get().node.arguments;
-  const wrapperIdentifier = node.find(j.Identifier).get().node.name;
+  const args = collection.find(j.CallExpression).get().node.arguments;
+  const wrapperIdentifier = collection.find(j.Identifier).get().node.name;
 
-  node.replaceWith(j.expressionStatement(j.callExpression(j.identifier('render'), args)));
+  collection.replaceWith(j.expressionStatement(j.callExpression(j.identifier('render'), args)));
 
   return {
     wrapperIdentifier,
@@ -45,8 +46,14 @@ const transformMountCall = (j, ast) => {
 };
 
 const transformLinkTextExpect = (j, ast) => (path) => {
-  console.log('isRtlFnExists', isRtlFnExists(j, ast, 'render'));
-  j(path).replaceWith();
+  if (!isRtlFnExists(j, ast, 'screen')) {
+    getImportDeclaration(j, ast, '@testing-library/react').insertAfter(
+      buildRtlImport(j, {
+        imported: 'screen',
+        source: '@testing-library/react',
+      })
+    );
+  }
 };
 
 module.exports = (file, api) => {
@@ -56,9 +63,7 @@ module.exports = (file, api) => {
   transformMountImport(j, ast);
   const { wrapperIdentifier } = transformMountCall(j, ast);
 
-  const node = findWrapperExpect(j, ast, { wrapperIdentifier });
-  console.log('node!!', node.length);
-  node.forEach(transformLinkTextExpect(j, ast));
+  findWrapperExpect(j, ast, { wrapperIdentifier }).forEach(transformLinkTextExpect(j, ast));
 
   return ast.toSource({
     quote: 'single',
