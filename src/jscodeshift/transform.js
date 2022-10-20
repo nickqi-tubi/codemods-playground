@@ -1,6 +1,6 @@
-import { findWrapperExpect, isRtlFnExists } from './utils';
+import { findWrapperExpect, isRtlFnExists, buildRtlImport } from './utils';
 
-const transformMountImport = (j, ast) =>
+const transformMountImport = (j, ast) => {
   ast
     .find(j.ImportDeclaration, {
       specifiers: [
@@ -14,7 +14,13 @@ const transformMountImport = (j, ast) =>
         value: 'enzyme',
       },
     })
-    .replaceWith(`import { render } from '@testing-library/react';`);
+    .replaceWith(
+      buildRtlImport(j, {
+        imported: 'render',
+        source: '@testing-library/react',
+      })
+    );
+};
 
 const transformMountCall = (j, ast) => {
   const node = ast.find(j.VariableDeclaration, {
@@ -54,5 +60,7 @@ module.exports = (file, api) => {
   console.log('node!!', node.length);
   node.forEach(transformLinkTextExpect(j, ast));
 
-  return ast.toSource();
+  return ast.toSource({
+    quote: 'single',
+  });
 };

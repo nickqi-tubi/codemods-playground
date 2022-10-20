@@ -40,3 +40,6 @@ export const isRtlFnExists = (j, ast, fn) =>
       },
     ],
   }).length > 0;
+
+export const buildRtlImport = (j, { imported, source }) =>
+  j.importDeclaration([j.importSpecifier(j.identifier(imported))], j.literal(source));
