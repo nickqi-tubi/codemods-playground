@@ -1,4 +1,4 @@
-import { getImportDeclaration } from '@codeshift/utils';
+import { insertImportSpecifier } from '@codeshift/utils';
 import { findWrapperExpect, isRtlFnExists, buildRtlImport } from './utils';
 
 const transformMountImport = (j, ast) => {
@@ -47,12 +47,7 @@ const transformMountCall = (j, ast) => {
 
 const transformLinkTextExpect = (j, ast) => (path) => {
   if (!isRtlFnExists(j, ast, 'screen')) {
-    getImportDeclaration(j, ast, '@testing-library/react').insertAfter(
-      buildRtlImport(j, {
-        imported: 'screen',
-        source: '@testing-library/react',
-      })
-    );
+    insertImportSpecifier(j, ast, j.importSpecifier(j.identifier('screen')), '@testing-library/react');
   }
 };
 
