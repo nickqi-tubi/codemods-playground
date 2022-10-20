@@ -1,3 +1,5 @@
+import { findWrapperExpect, isRtlFnExists } from './utils';
+
 const transformMountImport = (j, ast) =>
   ast
     .find(j.ImportDeclaration, {
@@ -27,7 +29,18 @@ const transformMountCall = (j, ast) => {
     ],
   });
   const args = node.find(j.CallExpression).get().node.arguments;
+  const wrapperIdentifier = node.find(j.Identifier).get().node.name;
+
   node.replaceWith(j.expressionStatement(j.callExpression(j.identifier('render'), args)));
+
+  return {
+    wrapperIdentifier,
+  };
+};
+
+const transformLinkTextExpect = (j, ast) => (path) => {
+  console.log('isRtlFnExists', isRtlFnExists(j, ast, 'render'));
+  j(path).replaceWith();
 };
 
 module.exports = (file, api) => {
@@ -35,7 +48,11 @@ module.exports = (file, api) => {
   const ast = j(file.source);
 
   transformMountImport(j, ast);
-  transformMountCall(j, ast);
+  const { wrapperIdentifier } = transformMountCall(j, ast);
+
+  const node = findWrapperExpect(j, ast, { wrapperIdentifier });
+  console.log('node!!', node.length);
+  node.forEach(transformLinkTextExpect(j, ast));
 
   return ast.toSource();
 };
