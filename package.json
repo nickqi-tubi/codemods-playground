@@ -6,7 +6,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "jscodeshift": "jscodeshift -t src/jscodeshift/transform.js src/App.enzyme.spec.js"
+    "test:jscodeshift": "npm test -- src/jscodeshift"
   },
   "eslintConfig": {
     "extends": [
