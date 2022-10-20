@@ -62,11 +62,7 @@ const transformLinkTextExpect = (j, ast, { wrapperIdentifier }) => {
       const selector = findCallee.object.arguments[0].value;
 
       if (selector === 'a' || selector.startsWith('a.')) {
-        j(path).replaceWith(`expect(
-  screen.getByRole('link', {
-    name: "${expectedValue}",
-  })
-).toBeInTheDocument();`);
+        j(path).replaceWith(`expect(screen.getByRole('link', { name: '${expectedValue}' })).toBeInTheDocument();`);
       }
     }
   });
@@ -81,5 +77,5 @@ module.exports = (file, api) => {
   transformLinkTextExpect(j, ast, { wrapperIdentifier });
 
   const source = ast.toSource({ quote: 'single' });
-  return prettier.format(source, { parser: 'babel', singleQuote: true });
+  return prettier.format(source, { parser: 'babel', singleQuote: true, printWidth: 120 });
 };
