@@ -7,8 +7,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:jscodeshift": "npm test -- src/jscodeshift",
-    "test:putout": "npm test -- src/putout",
-    "test:putout:tape": "tape src/putout/test/*.js"
+    "test:putout": "npm test -- src/putout"
   },
   "eslintConfig": {
     "extends": [
@@ -40,7 +39,6 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
-    "@putout/test": "^5.10.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.6",
     "jscodeshift": "^0.14.0",

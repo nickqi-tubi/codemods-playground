@@ -58,7 +58,6 @@ function runTest(dirName, transformName, options, testFilePrefix, testOptions = 
 
   const extension = extensionForParser(testOptions.parser);
   const fixtureDir = path.join(dirName, '..', '__testfixtures__');
-  console.log('fixtureDir', fixtureDir);
   const inputPath = path.join(fixtureDir, testFilePrefix + `.input.${extension}`);
   const source = fs.readFileSync(inputPath, 'utf8');
   const expectedOutput = fs.readFileSync(path.join(fixtureDir, testFilePrefix + `.output.${extension}`), 'utf8');
