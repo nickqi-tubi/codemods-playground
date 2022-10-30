@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const putout = require('putout');
+const prettier = require('prettier');
 
 function extensionForParser(parser) {
   switch (parser) {
@@ -21,7 +22,8 @@ function applyTransform(module, options, input, testOptions = {}) {
     plugins: [['test-transform', transform]],
   });
 
-  return (output || '').trim();
+  const source = output || '';
+  return prettier.format(source, { parser: 'babel', singleQuote: true, printWidth: 120 }).trim();
 }
 exports.applyTransform = applyTransform;
 

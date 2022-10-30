@@ -1,3 +1,1 @@
-const check = (a, b, c) => {
-  throw 'hello';
-};
+import { mount } from 'enzyme';

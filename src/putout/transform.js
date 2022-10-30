@@ -1,5 +1,5 @@
-module.exports.report = () => '"throw" should be used without body';
+export const report = () => 'migrate Enzyme.mount to RTL.render';
 
-module.exports.replace = () => ({
-  '(__args) => {throw __a}': '(__args) => throw __a',
+export const replace = () => ({
+  "import { mount } from 'enzyme'": "import { render } from '@testing-library/react'",
 });

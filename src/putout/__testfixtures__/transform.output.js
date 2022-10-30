@@ -1,1 +1,1 @@
-const check = (a, b, c) => throw 'hello';
+import { render } from '@testing-library/react';
