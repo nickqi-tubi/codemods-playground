@@ -68,7 +68,7 @@ const transformLinkTextExpect = (j, ast, { wrapperIdentifier }) => {
   });
 };
 
-module.exports = (file, api) => {
+const transform = (file, api) => {
   const j = api.jscodeshift;
   const ast = j(file.source);
 
@@ -79,3 +79,5 @@ module.exports = (file, api) => {
   const source = ast.toSource({ quote: 'single' });
   return prettier.format(source, { parser: 'babel', singleQuote: true, printWidth: 120 });
 };
+
+export default transform;
